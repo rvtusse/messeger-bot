@@ -1,22 +1,22 @@
 const axios = require('axios');
 
-function addUserDetails(ctx) {
+function addUserDetails(user) {
     /*
     Add a newly registered user to the firebase DB. 
     */
 
-    let userID = {
-        msidn: ctx.session.contact_number,
-        telegram_id: ctx.update.message.chat.id,
-        first_name: ctx.update.message.chat.first_name,
-        last_name: ctx.update.message.chat.last_name
+    let user_ID = {
+        
+        messenger_id: user.id,
+        first_name: user.first_name,
+        last_name: user.last_name
     }
-    console.log(userID);
-    
+    console.log(user_ID);
+    console.log('added')
     /*
         Posting data to the processor endpoint
     */
-    axios.post('https://processor-module.firebaseapp.com/processor/v1/saveUserDetails', userID)
+    axios.post('https://processor-module.firebaseapp.com/processor/v1/saveUserDetails', user_ID)
         .then(function (response) {
             console.log(response.data);
         })
@@ -25,20 +25,22 @@ function addUserDetails(ctx) {
 /*
 ADDING USER INTENT TO FIRESTORE AND CALLING IT TO (GET_INTENT_SCENE)
 */
-function addUserIntent(ctx) {
+function addUserIntent(convo) {
 
+    // convo.get('phone number') = phoneNumber
 
     let userIntent = {
-        id: ctx.session.contact_number,
-        intent: ctx.session.intent.text,
-        telegram_id: ctx.update.message.chat.id,
+        
+        intent:  convo.get('intent') ,
+        Phone_number :convo.get('phone number')
+        //telegram_id: user.id
 
 
     }
     /*
     CONSOLE THE USER INPUT / TEXT TYPED ON THE KEYBOARD
     */
-    console.log(userIntent.text);
+   // console.log(userIntent.text);
     /*
     SEND USER INTENT TO SAVEUSER INTENTS END-POINT 
     */
