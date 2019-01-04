@@ -16,7 +16,7 @@ function addUserDetails(user) {
     /*
         Posting data to the processor endpoint
     */
-    axios.post('https://processor-module.firebaseapp.com/processor/v1/saveUserDetails', user_ID)
+    axios.post('https://processor-module.firebaseapp.com/processor/v1/saveUserDetails/', user_ID)
         .then(function (response) {
             console.log(response.data);
         })
@@ -32,7 +32,7 @@ function addUserIntent(convo) {
     let userIntent = {
         
         intent:  convo.get('intent') ,
-        Phone_number :convo.get('phone number')
+        msidn :convo.get('phone number')
         //telegram_id: user.id
 
 

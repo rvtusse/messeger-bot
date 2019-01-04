@@ -38,10 +38,39 @@ bot.on('postback:PROMOS', (payload, chat) => {
 
 		});
 });
+
+//hardcoded for now
 bot.on('postback:HISTORY', (payload, chat) => {
+	chat.conversation((convo) => {
+		axios.get('https://processor-module.firebaseapp.com/processor/v1/userIntents/27748834166')
+		.then(response => {
+console.log(response.data);
+				for(var i = 0; i < response.data.intents.length; i++) {
+						console.log(i + ' ' +  response.data.intents[i]);
+			
+					//	27748834166 = response.data.msidn
+				chat.say(i + ' - ' + response.data.intents[i]);
+	 
+				console.log(i + ' ) ' + response.data.intents[i]);
+			
+				console.log(response.data.intents)
+		}
+		
+
+
+		})
+	})
 	chat.say(`coming soon...`);
+	
+		
 
 })
+
+
+
+
+
+
 
 bot.on('postback:EXIT', (payload, chat) => {
 	chat.getUserProfile().then((user) => {
@@ -104,7 +133,7 @@ bot.hear(['hello', 'hi', /hey( there)?/i], (payload, chat) => {
 									event: 'quick_reply',
 									callback: (payload, convo) => {
 										const text = payload.message.text;
-										addIntent.addUserIntent(convo)
+										addIntent.addUserIntent(convo,convo)
 										console.log('user intent saved..')
 										convo.say(`Sharp, your request has been processed \nTo go main menu just enter “menu.”`)
 										convo.end();
