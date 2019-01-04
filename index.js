@@ -1,7 +1,7 @@
 
 'use strict';
 
-
+const axios = require('axios');
 const BootBot = require('bootbot');
 const addUser = require('./utils');
 const addIntent = require('./utils');
@@ -17,17 +17,36 @@ const bot = new BootBot({
 
 
 
-bot.hear('help me', (payload, chat) => {
-	const text = payload.message.text;
-	const buttons = [
-		{ type: 'postback', title: 'Settings', payload: 'HELP_SETTINGS' },
-		{ type: 'postback', title: 'Notifications', payload: 'HELP_NOTIFICATIONS' }
-	];
-	chat.sendButtonTemplate(`Need help? Try one of these options`, buttons);
+bot.hear('menu', (payload, chat) => {
+	chat.getUserProfile().then((user) => {
+		const text = payload.message.text;
+		const buttons = [
+			{ type: 'postback', title: 'promos', payload: 'PROMOS' },
+			{ type: 'postback', title: 'History', payload: 'HISTORY' },
+			{ type: 'postback', title: 'Exit', payload: 'EXIT' }
+		];
+		chat.sendButtonTemplate(`Y'ello ${user.first_name}!, How can i help you?`, buttons);
+	});
 });
 
-bot.hear('convo', (payload, chat) => {
 
+bot.on('postback:PROMOS', (payload, chat) => {
+	chat.say(`History here...`);
+	axios.get('https://processor-module.firebaseapp.com/processor/v1/promotions')
+		.then(response => {
+			chat.say(response.data.advert);
+
+		});
+});
+bot.on('postback:HISTORY', (payload, chat) => {
+	chat.say(`coming soon...`);
+
+})
+
+bot.on('postback:EXIT', (payload, chat) => {
+	chat.getUserProfile().then((user) => {
+		chat.say(`Bye ${user.first_name}! come back soon. \nTo go to the main menu just enter “menu.”`);
+	});
 });
 
 
@@ -39,7 +58,7 @@ bot.hear(['hello', 'hi', /hey( there)?/i], (payload, chat) => {
 		addUser.addUserDetails(user)
 		chat.say(`Hello, ${user.first_name}! `, { typing: true }).then(() => {
 
-			
+
 			const askNumber = (convo => {
 				convo.ask(`May you please type in your Phone number for registration?`, (payload, convo) => {
 					const text = payload.message.text;
@@ -87,18 +106,18 @@ bot.hear(['hello', 'hi', /hey( there)?/i], (payload, chat) => {
 										const text = payload.message.text;
 										addIntent.addUserIntent(convo)
 										console.log('user intent saved..')
-										convo.say(`Sharp, your request has been processed`)
+										convo.say(`Sharp, your request has been processed \nTo go main menu just enter “menu.”`)
 										convo.end();
-		
+
 									}
 								}
 							])
 					});
-				
+
 
 				});
 			});
-			
+
 
 			chat.conversation((convo) => {
 				askNumber(convo);
@@ -110,8 +129,8 @@ bot.hear(['hello', 'hi', /hey( there)?/i], (payload, chat) => {
 
 
 	});
-}
-);
+});
+
 
 
 bot.start();
